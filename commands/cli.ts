@@ -73,7 +73,7 @@ export function registerCliSetup(api: OpenClawPluginApi): void {
 
 					console.log("\n✓ API key saved to ~/.openclaw/openclaw.json")
 					console.log(
-						"  Restart OpenClaw to apply changes: openclaw gateway --force\n",
+						"  Restart OpenClaw to apply changes: openclaw gateway restart\n",
 					)
 				})
 
@@ -330,7 +330,7 @@ export function registerCliSetup(api: OpenClawPluginApi): void {
 							`  Routing instructions: "${customContainerInstructions.trim().slice(0, 50)}${customContainerInstructions.length > 50 ? "..." : ""}"`,
 						)
 					}
-					console.log("\nRestart OpenClaw to apply: openclaw gateway --force\n")
+					console.log("\nRestart OpenClaw to apply: openclaw gateway restart\n")
 				})
 
 			cmd

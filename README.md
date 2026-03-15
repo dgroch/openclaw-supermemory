@@ -9,10 +9,10 @@ Long-term memory for OpenClaw. Automatically remembers conversations, recalls re
 ## Install
 
 ```bash
-openclaw plugins install @supermemory/openclaw-supermemory
+openclaw plugins install -l /path/to/openclaw-supermemory
 ```
 
-Restart OpenClaw after installing.
+Restart OpenClaw after installing with `openclaw gateway restart`.
 
 ## Setup
 
@@ -124,3 +124,12 @@ Or configure in `~/.openclaw/openclaw.json`:
   }
 }
 ```
+
+
+## Safe install notes
+
+- Prefer linking your audited fork locally during development instead of installing blind from npm.
+- Back up `~/.openclaw/openclaw.json` before enabling the plugin.
+- Verify with `openclaw hooks list`, `openclaw status`, and `openclaw supermemory status` after restart.
+- This plugin occupies the `memory` exclusive slot and will disable `memory-core` when enabled.
+- Use `openclaw gateway restart` rather than ad-hoc signals or forceful process-kill flows.
