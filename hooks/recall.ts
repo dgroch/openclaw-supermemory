@@ -131,6 +131,7 @@ function countUserTurns(messages: unknown[]): number {
 function formatContainerMetadata(
 	cfg: SupermemoryConfig,
 	messageProvider?: string,
+	resolvedContainerTag?: string,
 ): string | null {
 	if (!cfg.enableCustomContainerTags || cfg.customContainers.length === 0)
 		return null
@@ -177,11 +178,13 @@ export function buildRecallHandler(
 		const turn = countUserTurns(messages)
 		const includeProfile = turn <= 1 || turn % cfg.profileFrequency === 0
 		const messageProvider = ctx?.messageProvider as string | undefined
+			const agentId = (ctx?.agentId as string | undefined) ?? (ctx?.agentName as string | undefined)
+			const resolvedContainerTag = client.resolveContainerTag(agentId)
 
 		log.debug(`recalling for turn ${turn} (profile: ${includeProfile})`)
 
 		try {
-			const profile = await client.getProfile(prompt)
+			const profile = await client.getProfile(prompt, resolvedContainerTag)
 			const memoryContext = formatContext(
 				includeProfile ? profile.static : [],
 				includeProfile ? profile.dynamic : [],
@@ -189,7 +192,7 @@ export function buildRecallHandler(
 				cfg.maxRecallResults,
 			)
 
-			const containerContext = formatContainerMetadata(cfg, messageProvider)
+			const containerContext = formatContainerMetadata(cfg, messageProvider, resolvedContainerTag)
 
 			const contextParts: string[] = []
 			if (memoryContext) contextParts.push(memoryContext)

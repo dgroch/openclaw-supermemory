@@ -11,6 +11,7 @@ export type CustomContainer = {
 export type SupermemoryConfig = {
 	apiKey: string | undefined
 	containerTag: string
+	agentContainerMap: Record<string, string>
 	autoRecall: boolean
 	autoCapture: boolean
 	maxRecallResults: number
@@ -36,6 +37,7 @@ const ALLOWED_KEYS = [
 	"enableCustomContainerTags",
 	"customContainers",
 	"customContainerInstructions",
+	"agentContainerMap",
 ]
 
 function assertAllowedKeys(
@@ -91,6 +93,7 @@ export function parseConfig(raw: unknown): SupermemoryConfig {
 	}
 
 	const customContainers: CustomContainer[] = []
+	const agentContainerMap: Record<string, string> = {}
 	if (Array.isArray(cfg.customContainers)) {
 		for (const c of cfg.customContainers) {
 			if (
@@ -107,11 +110,18 @@ export function parseConfig(raw: unknown): SupermemoryConfig {
 		}
 	}
 
+	if (cfg.agentContainerMap && typeof cfg.agentContainerMap === "object" && !Array.isArray(cfg.agentContainerMap)) {
+		for (const [k, v] of Object.entries(cfg.agentContainerMap as Record<string, unknown>)) {
+			if (typeof v === "string" && v.trim()) agentContainerMap[k] = sanitizeTag(v)
+		}
+	}
+
 	return {
 		apiKey,
 		containerTag: cfg.containerTag
 			? sanitizeTag(cfg.containerTag as string)
 			: defaultContainerTag(),
+		agentContainerMap,
 		autoRecall: (cfg.autoRecall as boolean) ?? true,
 		autoCapture: (cfg.autoCapture as boolean) ?? true,
 		maxRecallResults: (cfg.maxRecallResults as number) ?? 10,
@@ -162,6 +172,10 @@ export const supermemoryConfigSchema = {
 				},
 			},
 			customContainerInstructions: { type: "string" },
+			agentContainerMap: {
+				type: "object",
+				additionalProperties: { type: "string" }
+			},
 		},
 	},
 	parse: parseConfig,

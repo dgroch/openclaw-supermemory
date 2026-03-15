@@ -35,8 +35,9 @@ function limitText(text: string, max: number): string {
 export class SupermemoryClient {
 	private client: Supermemory
 	private containerTag: string
+	private agentContainerMap: Record<string, string>
 
-	constructor(apiKey: string, containerTag: string) {
+	constructor(apiKey: string, containerTag: string, agentContainerMap: Record<string, string> = {}) {
 		const keyCheck = validateApiKeyFormat(apiKey)
 		if (!keyCheck.valid) {
 			throw new Error(`invalid API key: ${keyCheck.reason}`)
@@ -49,6 +50,7 @@ export class SupermemoryClient {
 
 		this.client = new Supermemory({ apiKey })
 		this.containerTag = containerTag
+		this.agentContainerMap = agentContainerMap
 		log.info(`initialized (container: ${containerTag})`)
 	}
 
@@ -227,7 +229,14 @@ export class SupermemoryClient {
 		return { deletedCount }
 	}
 
+	resolveContainerTag(agentId?: string, explicitContainerTag?: string): string {
+		if (explicitContainerTag) return explicitContainerTag
+		if (agentId && this.agentContainerMap[agentId]) return this.agentContainerMap[agentId]
+		return this.containerTag
+	}
+
 	getContainerTag(): string {
 		return this.containerTag
 	}
 }
+

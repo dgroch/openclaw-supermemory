@@ -33,7 +33,7 @@ export default {
 			return
 		}
 
-		const client = new SupermemoryClient(cfg.apiKey, cfg.containerTag)
+		const client = new SupermemoryClient(cfg.apiKey, cfg.containerTag, cfg.agentContainerMap)
 
 		let sessionKey: string | undefined
 		const getSessionKey = () => sessionKey

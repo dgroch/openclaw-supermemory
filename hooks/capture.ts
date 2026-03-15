@@ -34,6 +34,8 @@ export function buildCaptureHandler(
 			`agent_end fired: provider="${ctx.messageProvider}" success=${event.success}`,
 		)
 		const provider = ctx.messageProvider as string
+		const agentId = (ctx.agentId as string | undefined) ?? (ctx.agentName as string | undefined)
+		const resolvedContainerTag = client.resolveContainerTag(agentId)
 		if (SKIPPED_PROVIDERS.includes(provider)) {
 			return
 		}
@@ -106,9 +108,9 @@ export function buildCaptureHandler(
 		try {
 			await client.addMemory(
 				content,
-				{ source: "openclaw", timestamp: new Date().toISOString() },
+				{ source: "openclaw", timestamp: new Date().toISOString(), agentId: agentId ?? "unknown" },
 				customId,
-				undefined,
+				resolvedContainerTag,
 				cfg.entityContext,
 			)
 		} catch (err) {
