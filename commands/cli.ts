@@ -435,7 +435,10 @@ export function registerCli(
 				// biome-ignore lint/suspicious/noExplicitAny: openclaw SDK does not ship types
 				(c: any) => c.name() === "supermemory",
 			)
-			if (!cmd) return
+			if (!cmd) {
+				api.logger.warn("supermemory: root cli command not found while registering subcommands")
+				return
+			}
 
 			cmd
 				.command("search")
